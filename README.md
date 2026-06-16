@@ -1,6 +1,8 @@
 # CareerSync - The Anti-Exhaustion Job Engine
+Tired of endless job hunting? **CareerSync** is an AI-powered hub that aggregates personalized jobs, internships, and hackathons into one feed. Just upload your baseline resume, and our AI instantly auto-tailors your CV and SOP for each specific role. Built Python, Gemini AI, FastAPI, BeautifulSoup, Tailwind CSS, web-scraping pipelines, and intelligent recommendation engines, to automate search and completely end application fatigue.
 
-CareerSync is a state-of-the-art career assistance platform designed to automate opportunity aggregation, profile matching, and application document tailoring. It serves as a single workspace to cure application burnout for students and professionals.
+
+**🚀Live Demo: Try CareerSync.ai Here!** https://careersync-ai-g27x.onrender.com
 
 ---
 
@@ -152,49 +154,3 @@ python -m uvicorn main:app --reload --port 8000
 Open **[http://localhost:8000](http://localhost:8000)** in your web browser.
 
 ---
-
-## 🌐 How to Deploy the Project
-
-Since CareerSync is built as a FastAPI Python backend serving static HTML5 files, it can be deployed in under 5 minutes on modern hosting providers.
-
-### Option A: Deploying to Render (Recommended & Free)
-[Render](https://render.com) is the easiest platform to host FastAPI applications directly from GitHub.
-
-1. **Push Code to GitHub:** Initialize git in your project directory, commit all files (including `requirements.txt`), and push them to a public or private GitHub repository.
-2. **Create Web Service:**
-   * Go to [Render Dashboard](https://dashboard.render.com) and click **New > Web Service**.
-   * Connect your GitHub account and select your CareerSync repository.
-3. **Configure Settings:**
-   * **Runtime:** `Python`
-   * **Build Command:** `pip install -r requirements.txt`
-   * **Start Command:** `python -m uvicorn main:app --host 0.0.0.0 --port 8000` (or `gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app` for production).
-4. **Environment Variables:**
-   * Under the **Environment** tab, click **Add Environment Variable**.
-   * Add Key: `GEMINI_API_KEY` and Value: (your Google AI Studio API key).
-5. **Deploy:** Click **Create Web Service**. Render will build the environment and host your application at a custom `https://your-app-name.onrender.com` URL.
-
-### Option B: Deploying to Railway
-[Railway](https://railway.app) automatically provisions servers from GitHub repositories:
-
-1. **Connect Repository:** Log in to Railway, click **New Project > Deploy from GitHub**, and select your repository.
-2. **Add Variables:** Click on the deployed service, go to the **Variables** tab, and add `GEMINI_API_KEY` with your API key value.
-3. **Deploy:** Railway will scan `requirements.txt`, install dependencies, run Uvicorn on an allocated port, and expose a public URL under the **Settings** tab.
-
-### Option C: Production Deployment using Docker
-For cloud providers (AWS ECS, GCP Cloud Run, DigitalOcean App Platform), you can containerize the app.
-
-1. Create a `Dockerfile` in the root directory:
-   ```dockerfile
-   FROM python:3.10-slim
-   WORKDIR /app
-   COPY requirements.txt .
-   RUN pip install --no-cache-dir -r requirements.txt
-   COPY . .
-   EXPOSE 8000
-   CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-   ```
-2. Build and run the container:
-   ```bash
-   docker build -t careersync .
-   docker run -p 8000:8000 -e GEMINI_API_KEY="your_api_key" careersync
-   ```
