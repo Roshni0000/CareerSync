@@ -1,0 +1,24 @@
+# Sensitive environment variables
+.env
+.env.local
+.env.*
+
+# Python compilation files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# CareerSync Local Cache & User Data
+data/opportunities.json
+data/match_cache.json
+data/tailored_cache.json
+data/profile.json
+uploads/*
+!uploads/.gitkeep
+
+# OS and IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

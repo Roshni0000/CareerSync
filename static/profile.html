@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup Your Profile - CareerSync</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            space: '#060a13',
+            nebula: '#6366f1',
+            mint: '#10b981',
+            amber: '#f59e0b',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-space flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between no-print">
+    <div class="flex items-center gap-3">
+      <a href="/" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-nebula to-mint flex items-center justify-center shadow-lg shadow-nebula/30">
+        <i data-lucide="sparkles" class="text-white w-5 h-5"></i>
+      </a>
+      <span class="font-extrabold text-2xl tracking-tight text-white">CareerSync</span>
+    </div>
+    <nav class="flex items-center gap-6">
+      <a href="/profile.html" class="text-white font-semibold text-sm border-b-2 border-nebula pb-1">Profile</a>
+      <a href="/radar.html" class="text-gray-300 hover:text-white transition font-medium text-sm">Opportunity Radar</a>
+    </nav>
+  </header>
+
+  <!-- Main Section -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Left Panel: Drag & Drop Parser & Gamification Meter (4 cols) -->
+    <div class="lg:col-span-4 flex flex-col gap-6">
+      
+      <!-- Profile Completeness Widget -->
+      <div class="glass-panel p-6 rounded-2xl flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white">Profile Quotient</h2>
+          <p class="text-gray-400 text-xs mt-1">Completeness rating for AI job matching</p>
+          <div class="mt-4 text-xs font-semibold text-mint flex items-center gap-1.5" id="quotient-status">
+            <i data-lucide="check-circle" class="w-4 h-4"></i> Empty Profile
+          </div>
+        </div>
+        <div class="circle-progress-container">
+          <svg class="w-full h-full">
+            <circle class="circle-bg" cx="60" cy="60" r="50"></circle>
+            <circle class="circle-progress-val" id="progress-circle" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center font-bold text-2xl text-white" id="progress-text">0%</div>
+        </div>
+      </div>
+
+      <!-- Drag & Drop Parser -->
+      <div class="glass-panel p-6 rounded-2xl flex flex-col gap-4 relative overflow-hidden" id="upload-panel">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="cpu" class="text-nebula w-5 h-5"></i>
+          AI Resume Parser
+        </h2>
+        
+        <div id="drop-zone" class="border-2 border-dashed border-gray-700 hover:border-nebula/60 rounded-xl p-8 text-center cursor-pointer transition-colors duration-200 flex flex-col items-center gap-3 bg-white/5">
+          <div class="w-12 h-12 rounded-full bg-nebula/10 flex items-center justify-center text-nebula" id="upload-icon-container">
+            <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-white">Drag & drop your baseline resume</p>
+            <p class="text-xs text-gray-500 mt-1">Supports PDF (Max 10MB)</p>
+          </div>
+          <input type="file" id="file-input" class="hidden" accept=".pdf">
+        </div>
+
+        <!-- Parser Progress Logger -->
+        <div id="parser-logger" class="hidden border border-white/5 bg-black/40 rounded-xl p-4 flex flex-col gap-2.5 max-h-56 overflow-y-auto">
+          <!-- Live log lines inject here -->
+        </div>
+
+        <!-- Scanning overlay animation -->
+        <div id="scanner-line" class="hidden absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-nebula to-transparent shadow-lg shadow-nebula top-0"></div>
+      </div>
+      
+      <!-- Next Page Link -->
+      <a href="/radar.html" class="w-full px-6 py-4 rounded-xl bg-gradient-to-r from-mint to-teal-600 hover:from-mint/95 hover:to-teal-600/95 text-white font-bold text-center transition flex items-center justify-center gap-2 shadow-lg shadow-mint/15">
+        <i data-lucide="radar" class="w-5 h-5"></i>
+        Go to Opportunity Radar
+      </a>
+
+    </div>
+
+    <!-- Right Panel: Master Profile Form (8 cols) -->
+    <div class="lg:col-span-8 glass-panel p-8 rounded-2xl flex flex-col gap-6">
+      <div class="flex justify-between items-center border-b border-white/5 pb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Master Career Profile</h2>
+          <p class="text-gray-400 text-sm mt-0.5">Edit your details below to feed the tailoring & match engines</p>
+        </div>
+        <button onclick="saveProfile()" class="px-6 py-2.5 rounded-xl bg-nebula hover:bg-nebula/80 text-white font-bold text-sm transition flex items-center gap-2">
+          <i data-lucide="save" class="w-4 h-4"></i> Save Profile
+        </button>
+      </div>
+
+      <!-- General Info -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
+          <input type="text" id="prof-name" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="John Doe">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
+          <input type="email" id="prof-email" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="john@example.com">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Phone Number</label>
+          <input type="text" id="prof-phone" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="+91 9876543210">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">LinkedIn URL</label>
+          <input type="text" id="prof-linkedin" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="linkedin.com/in/username">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">GitHub URL</label>
+          <input type="text" id="prof-github" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="github.com/username">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Portfolio/Website</label>
+          <input type="text" id="prof-portfolio" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="portfolio.com">
+        </div>
+      </div>
+
+      <!-- Professional Summary -->
+      <div>
+        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Professional Summary</label>
+        <textarea id="prof-summary" rows="3" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm resize-none" placeholder="A brief overview of your skills, background, and career goals..."></textarea>
+      </div>
+
+      <!-- Career Preferences & Search Constraints -->
+      <div class="border-t border-white/5 pt-6 flex flex-col gap-6">
+        <h3 class="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="sliders" class="text-nebula w-5 h-5"></i> Career Preferences & Matching Constraints
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Your Home Location</label>
+            <input type="text" id="prof-user-location" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="e.g. Mumbai">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Preferred Locations (Comma separated)</label>
+            <input type="text" id="prof-pref-locations" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="e.g. Mumbai, Bangalore, Remote">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Expected Pay / Stipend (Min)</label>
+            <input type="text" id="prof-expected-salary" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="e.g. 10000/month or 6LPA">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Preferred Domains / Keywords (Comma separated)</label>
+            <input type="text" id="prof-pref-domains" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="e.g. Software Developer, Data Science">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Preferred Job Types</label>
+            <div class="flex gap-4 mt-2">
+              <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                <input type="checkbox" id="type-internship" class="rounded bg-white/5 border-white/10 text-nebula focus:ring-nebula h-4 w-4" checked>
+                <span>Internships</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                <input type="checkbox" id="type-fulltime" class="rounded bg-white/5 border-white/10 text-nebula focus:ring-nebula h-4 w-4" checked>
+                <span>Full-time Jobs</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                <input type="checkbox" id="type-hackathon" class="rounded bg-white/5 border-white/10 text-nebula focus:ring-nebula h-4 w-4" checked>
+                <span>Hackathons / Contests</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Section -->
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Technical & Soft Skills</label>
+          <span class="text-[10px] text-gray-500">Comma separated to add tags</span>
+        </div>
+        <input type="text" id="skill-input" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-nebula text-sm" placeholder="React, Python, SQL, Git, Public Speaking (Press Enter or Comma to add)">
+        <div id="skills-container" class="flex flex-wrap gap-2 mt-3">
+          <!-- Skill tags inject here -->
+        </div>
+      </div>
+
+      <!-- Education Section -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="graduation-cap" class="text-nebula w-5 h-5"></i> Education
+          </h3>
+          <button onclick="addEducation()" class="text-xs font-bold text-nebula hover:underline flex items-center gap-1">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Institution
+          </button>
+        </div>
+        <div id="education-list" class="flex flex-col gap-4">
+          <!-- Education items inject here -->
+        </div>
+      </div>
+
+      <!-- Experience Section -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="briefcase" class="text-nebula w-5 h-5"></i> Work Experience
+          </h3>
+          <button onclick="addExperience()" class="text-xs font-bold text-nebula hover:underline flex items-center gap-1">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Experience
+          </button>
+        </div>
+        <div id="experience-list" class="flex flex-col gap-4">
+          <!-- Experience items inject here -->
+        </div>
+      </div>
+
+      <!-- Projects Section -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="folder" class="text-nebula w-5 h-5"></i> Personal Projects
+          </h3>
+          <button onclick="addProject()" class="text-xs font-bold text-nebula hover:underline flex items-center gap-1">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Project
+          </button>
+        </div>
+        <div id="projects-list" class="flex flex-col gap-4">
+          <!-- Projects inject here -->
+        </div>
+      </div>
+
+      <!-- Save Button Footer -->
+      <div class="border-t border-white/5 pt-4 flex justify-end">
+        <button onclick="saveProfile()" class="px-8 py-3 rounded-xl bg-gradient-to-r from-nebula to-purple-600 hover:from-nebula/90 hover:to-purple-600/90 text-white font-bold transition flex items-center gap-2 shadow-lg shadow-nebula/20">
+          <i data-lucide="check" class="w-5 h-5"></i> Complete Setup & Save
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 text-center text-gray-500 text-xs border-t border-white/5 no-print">
+    &copy; 2026 CareerSync. Empowering Indian students.
+  </footer>
+
+  <!-- Script Logic -->
+  <script>
+    // Global profile state
+    let profileState = {
+      name: "", email: "", phone: "",
+      links: { linkedin: "", github: "", portfolio: "" },
+      summary: "",
+      education: [], experience: [], projects: [], skills: [],
+      user_location: "",
+      preferred_locations: [],
+      preferred_domains: [],
+      preferred_job_types: [],
+      expected_salary: ""
+    };
+
+    // Initialize Page
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProfileData();
+      setupDragAndDrop();
+      setupSkillInput();
+      lucide.createIcons();
+    });
+
+    // Load existing profile from backend
+    async function loadProfileData() {
+      try {
+        const response = await fetch("/api/get-profile");
+        const data = await response.json();
+        if (data && (data.name || data.skills.length > 0)) {
+          profileState = data;
+          populateForm();
+        }
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      }
+    }
+
+    // Populate the form fields with current state
+    function populateForm() {
+      document.getElementById("prof-name").value = profileState.name || "";
+      document.getElementById("prof-email").value = profileState.email || "";
+      document.getElementById("prof-phone").value = profileState.phone || "";
+      document.getElementById("prof-linkedin").value = profileState.links?.linkedin || "";
+      document.getElementById("prof-github").value = profileState.links?.github || "";
+      document.getElementById("prof-portfolio").value = profileState.links?.portfolio || "";
+      document.getElementById("prof-summary").value = profileState.summary || "";
+
+      // Preferences
+      document.getElementById("prof-user-location").value = profileState.user_location || "";
+      document.getElementById("prof-pref-locations").value = profileState.preferred_locations ? profileState.preferred_locations.join(", ") : "";
+      document.getElementById("prof-pref-domains").value = profileState.preferred_domains ? profileState.preferred_domains.join(", ") : "";
+      document.getElementById("prof-expected-salary").value = profileState.expected_salary || "";
+
+      const jobTypes = profileState.preferred_job_types || [];
+      document.getElementById("type-internship").checked = jobTypes.includes("Internship") || jobTypes.length === 0;
+      document.getElementById("type-fulltime").checked = jobTypes.includes("Full-time") || jobTypes.length === 0;
+      document.getElementById("type-hackathon").checked = jobTypes.includes("Hackathon") || jobTypes.length === 0;
+
+      // Skills
+      renderSkills();
+
+      // Education
+      const eduList = document.getElementById("education-list");
+      eduList.innerHTML = "";
+      if (profileState.education) {
+        profileState.education.forEach((edu, idx) => createEduRow(edu, idx));
+      }
+
+      // Experience
+      const expList = document.getElementById("experience-list");
+      expList.innerHTML = "";
+      if (profileState.experience) {
+        profileState.experience.forEach((exp, idx) => createExpRow(exp, idx));
+      }
+
+      // Projects
+      const projList = document.getElementById("projects-list");
+      projList.innerHTML = "";
+      if (profileState.projects) {
+        profileState.projects.forEach((proj, idx) => createProjectRow(proj, idx));
+      }
+
+      calculateStrength();
+      lucide.createIcons();
+    }
+
+    // Capture form fields and update state object
+    function readForm() {
+      profileState.name = document.getElementById("prof-name").value;
+      profileState.email = document.getElementById("prof-email").value;
+      profileState.phone = document.getElementById("prof-phone").value;
+      profileState.links = {
+        linkedin: document.getElementById("prof-linkedin").value,
+        github: document.getElementById("prof-github").value,
+        portfolio: document.getElementById("prof-portfolio").value
+      };
+      profileState.summary = document.getElementById("prof-summary").value;
+
+      // Read Preferences
+      profileState.user_location = document.getElementById("prof-user-location").value;
+      profileState.expected_salary = document.getElementById("prof-expected-salary").value;
+      
+      const prefLocsText = document.getElementById("prof-pref-locations").value;
+      profileState.preferred_locations = prefLocsText ? prefLocsText.split(",").map(x => x.trim()).filter(x => x) : [];
+      
+      const prefDomsText = document.getElementById("prof-pref-domains").value;
+      profileState.preferred_domains = prefDomsText ? prefDomsText.split(",").map(x => x.trim()).filter(x => x) : [];
+
+      profileState.preferred_job_types = [];
+      if (document.getElementById("type-internship").checked) profileState.preferred_job_types.push("Internship");
+      if (document.getElementById("type-fulltime").checked) profileState.preferred_job_types.push("Full-time");
+      if (document.getElementById("type-hackathon").checked) profileState.preferred_job_types.push("Hackathon");
+
+      // Read repeating sections
+      profileState.education = [];
+      const eduItems = document.querySelectorAll(".edu-item");
+      eduItems.forEach(item => {
+        profileState.education.push({
+          institution: item.querySelector(".edu-institution").value,
+          degree: item.querySelector(".edu-degree").value,
+          field: item.querySelector(".edu-field").value,
+          duration: item.querySelector(".edu-duration").value,
+          grade: item.querySelector(".edu-grade").value
+        });
+      });
+
+      profileState.experience = [];
+      const expItems = document.querySelectorAll(".exp-item");
+      expItems.forEach(item => {
+        profileState.experience.push({
+          company: item.querySelector(".exp-company").value,
+          role: item.querySelector(".exp-role").value,
+          location: item.querySelector(".exp-location").value,
+          duration: item.querySelector(".exp-duration").value,
+          description: item.querySelector(".exp-description").value
+        });
+      });
+
+      profileState.projects = [];
+      const projItems = document.querySelectorAll(".proj-item");
+      projItems.forEach(item => {
+        const techStr = item.querySelector(".proj-techs").value;
+        const techs = techStr ? techStr.split(",").map(t => t.strip ? t.strip() : t.trim()) : [];
+        profileState.projects.push({
+          title: item.querySelector(".proj-title").value,
+          technologies: techs,
+          description: item.querySelector(".proj-description").value,
+          link: item.querySelector(".proj-link").value
+        });
+      });
+    }
+
+    // Save profile to backend
+    async function saveProfile() {
+      readForm();
+      try {
+        const response = await fetch("/api/save-profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(profileState)
+        });
+        const result = await response.json();
+        if (result.status === "success") {
+          alert("Profile saved successfully!");
+          calculateStrength();
+        }
+      } catch (err) {
+        alert("Error saving profile: " + err);
+      }
+    }
+
+    // Dynamic Skill Tags Input
+    function setupSkillInput() {
+      const input = document.getElementById("skill-input");
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === ",") {
+          e.preventDefault();
+          const val = input.value.trim().replace(/,$/, "");
+          if (val && !profileState.skills.includes(val)) {
+            profileState.skills.push(val);
+            renderSkills();
+            calculateStrength();
+            input.value = "";
+          }
+        }
+      });
+    }
+
+    function removeSkill(skill) {
+      profileState.skills = profileState.skills.filter(s => s !== skill);
+      renderSkills();
+      calculateStrength();
+    }
+
+    function renderSkills() {
+      const container = document.getElementById("skills-container");
+      container.innerHTML = "";
+      profileState.skills.forEach(skill => {
+        const div = document.createElement("div");
+        div.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-nebula/10 text-nebula text-xs font-semibold border border-nebula/30";
+        div.innerHTML = `
+          <span>${skill}</span>
+          <button onclick="removeSkill('${skill}')" class="hover:text-red-400 font-bold focus:outline-none">&times;</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Education rows generator
+    function createEduRow(edu = {}, idx) {
+      const parent = document.getElementById("education-list");
+      const div = document.createElement("div");
+      div.className = "edu-item border border-white/5 bg-white/5 p-4 rounded-xl flex flex-col gap-4 relative group";
+      div.innerHTML = `
+        <button onclick="removeItem(this)" class="absolute top-4 right-4 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Institution Name</label>
+            <input type="text" class="edu-institution w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" value="${edu.institution || ''}">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Degree / Certificate</label>
+            <input type="text" class="edu-degree w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. B.Tech" value="${edu.degree || ''}">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Field of Study</label>
+            <input type="text" class="edu-field w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. Computer Science" value="${edu.field || ''}">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Duration / Dates</label>
+            <input type="text" class="edu-duration w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. 2020 - 2024" value="${edu.duration || ''}">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Grade / CGPA</label>
+            <input type="text" class="edu-grade w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. 9.1 CGPA" value="${edu.grade || ''}">
+          </div>
+        </div>
+      `;
+      parent.appendChild(div);
+      lucide.createIcons();
+    }
+
+    function addEducation() {
+      createEduRow({}, profileState.education.length);
+    }
+
+    // Experience row generator
+    function createExpRow(exp = {}, idx) {
+      const parent = document.getElementById("experience-list");
+      const div = document.createElement("div");
+      div.className = "exp-item border border-white/5 bg-white/5 p-4 rounded-xl flex flex-col gap-4 relative group";
+      div.innerHTML = `
+        <button onclick="removeItem(this)" class="absolute top-4 right-4 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Company / Organization</label>
+            <input type="text" class="exp-company w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" value="${exp.company || ''}">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Role / Job Title</label>
+            <input type="text" class="exp-role w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. Frontend Developer" value="${exp.role || ''}">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Location</label>
+            <input type="text" class="exp-location w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. Remote / Bangalore" value="${exp.location || ''}">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Duration / Dates</label>
+            <input type="text" class="exp-duration w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. June 2023 - Present" value="${exp.duration || ''}">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Description</label>
+          <textarea rows="2" class="exp-description w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula resize-none" placeholder="Details of your accomplishments...">${exp.description || ''}</textarea>
+        </div>
+      `;
+      parent.appendChild(div);
+      lucide.createIcons();
+    }
+
+    function addExperience() {
+      createExpRow({}, profileState.experience.length);
+    }
+
+    // Projects Row Generator
+    function createProjectRow(proj = {}, idx) {
+      const parent = document.getElementById("projects-list");
+      const div = document.createElement("div");
+      div.className = "proj-item border border-white/5 bg-white/5 p-4 rounded-xl flex flex-col gap-4 relative group";
+      div.innerHTML = `
+        <button onclick="removeItem(this)" class="absolute top-4 right-4 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Project Title</label>
+            <input type="text" class="proj-title w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" value="${proj.title || ''}">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Project Link (GitHub/Live)</label>
+            <input type="text" class="proj-link w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="https://github.com/..." value="${proj.link || ''}">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Technologies Used (Comma separated)</label>
+          <input type="text" class="proj-techs w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="React, Node.js, SQLite" value="${proj.technologies ? proj.technologies.join(', ') : ''}">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Project Description</label>
+          <textarea rows="2" class="proj-description w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula resize-none" placeholder="Key details and results of the project...">${proj.description || ''}</textarea>
+        </div>
+      `;
+      parent.appendChild(div);
+      lucide.createIcons();
+    }
+
+    function addProject() {
+      createProjectRow({}, profileState.projects.length);
+    }
+
+    // Generic remove child row item
+    function removeItem(button) {
+      button.parentElement.remove();
+      calculateStrength();
+    }
+
+    // Calculate completion strength & update circular progress widget
+    function calculateStrength() {
+      readForm();
+      
+      let points = 0;
+      let total = 100;
+      
+      if (profileState.name) points += 10;
+      if (profileState.email) points += 5;
+      if (profileState.phone) points += 5;
+      if (profileState.links.linkedin || profileState.links.github) points += 5;
+      if (profileState.summary) points += 10;
+      if (profileState.skills.length > 0) points += 15;
+      if (profileState.education.length > 0) points += 10;
+      if (profileState.experience.length > 0 || profileState.projects.length > 0) points += 15;
+      
+      // Preferences points
+      if (profileState.user_location) points += 10;
+      if (profileState.preferred_locations.length > 0) points += 5;
+      if (profileState.preferred_job_types.length > 0) points += 10;
+      if (profileState.preferred_domains.length > 0) points += 10;
+      
+      points = Math.min(points, total);
+      
+      // Update DOM
+      const progressCircle = document.getElementById("progress-circle");
+      const progressText = document.getElementById("progress-text");
+      const statusText = document.getElementById("quotient-status");
+      
+      const circumference = 2 * Math.PI * 50; // r=50 -> 314.16
+      const offset = circumference - (points / total) * circumference;
+      
+      progressCircle.style.strokeDashoffset = offset;
+      progressText.innerText = `${points}%`;
+      
+      if (points < 30) {
+        statusText.className = "mt-4 text-xs font-semibold text-red-400 flex items-center gap-1.5";
+        statusText.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4"></i> Empty Profile`;
+      } else if (points < 70) {
+        statusText.className = "mt-4 text-xs font-semibold text-amber flex items-center gap-1.5";
+        statusText.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Getting There`;
+      } else {
+        statusText.className = "mt-4 text-xs font-semibold text-mint flex items-center gap-1.5";
+        statusText.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> AI-Engine Ready`;
+      }
+      
+      lucide.createIcons();
+    }
+
+    // File Drag & Drop Setup
+    function setupDragAndDrop() {
+      const dropZone = document.getElementById("drop-zone");
+      const fileInput = document.getElementById("file-input");
+      const logger = document.getElementById("parser-logger");
+      const scanner = document.getElementById("scanner-line");
+      const uploadIcon = document.getElementById("upload-icon-container");
+
+      dropZone.addEventListener("click", () => fileInput.click());
+      
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("border-nebula", "bg-nebula/5");
+      });
+      
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("border-nebula", "bg-nebula/5");
+      });
+      
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("border-nebula", "bg-nebula/5");
+        if (e.dataTransfer.files.length > 0) {
+          uploadFile(e.dataTransfer.files[0]);
+        }
+      });
+      
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+          uploadFile(fileInput.files[0]);
+        }
+      });
+    }
+
+    // Upload & Parse PDF
+    async function uploadFile(file) {
+      if (file.type !== "application/pdf") {
+        alert("Please upload a PDF file.");
+        return;
+      }
+
+      const logger = document.getElementById("parser-logger");
+      const scanner = document.getElementById("scanner-line");
+      
+      logger.innerHTML = "";
+      logger.classList.remove("hidden");
+      scanner.classList.remove("hidden");
+      
+      function logLine(text, type = "info") {
+        const line = document.createElement("div");
+        line.className = "parser-logger-line text-xs font-mono " + 
+          (type === "success" ? "text-mint border-mint" : type === "error" ? "text-red-400 border-red-400" : "text-gray-400 border-nebula");
+        line.innerText = text;
+        logger.appendChild(line);
+        logger.scrollTop = logger.scrollHeight;
+      }
+
+      logLine("[INFO] Initiating parsing pipeline...");
+      logLine(`[INFO] Selected file: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+      
+      // Simulate visual scan line animations
+      scanner.className = "absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-nebula to-transparent shadow-lg shadow-nebula top-0 animate-[scan-line_2s_infinite]";
+      
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      try {
+        logLine("[INFO] Transferring file to backend scanner...");
+        
+        // Setup updates simulating different stages
+        setTimeout(() => logLine("[INFO] Extracting PDF text layout & structures..."), 800);
+        setTimeout(() => logLine("[INFO] Analyzing tokens with Gemini 1.5 Flash..."), 1600);
+        setTimeout(() => logLine("[INFO] Structuring education & project fields..."), 2400);
+
+        const response = await fetch("/api/parse-resume", {
+          method: "POST",
+          body: formData
+        });
+        
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.detail || "Server error parsing file.");
+        }
+        
+        const data = await response.json();
+        
+        if (!data.name && data.summary && data.summary.includes("Failed to parse")) {
+          logLine("[ERROR] AI Parsing failed. Gemini API rate limit or quota exceeded.", "error");
+          alert("Gemini AI API rate limit/quota exceeded or API key invalid. CareerSync could not extract your resume automatically. Please enter your profile details manually below.");
+          scanner.classList.add("hidden");
+          return;
+        }
+        
+        logLine("[SUCCESS] Parser returned structured profile data!", "success");
+        setTimeout(() => {
+          profileState = data;
+          populateForm();
+          scanner.classList.add("hidden");
+          logger.classList.add("hidden");
+        }, 1000);
+        
+      } catch (err) {
+        logLine(`[ERROR] Parsing failed: ${err.message}`, "error");
+        scanner.classList.add("hidden");
+      }
+    }
+  </script>
+</body>
+</html>

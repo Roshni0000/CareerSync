@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Workspace - CareerSync</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            space: '#060a13',
+            nebula: '#6366f1',
+            mint: '#10b981',
+            amber: '#f59e0b',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-space flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between no-print">
+    <div class="flex items-center gap-3">
+      <a href="/" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-nebula to-mint flex items-center justify-center shadow-lg shadow-nebula/30">
+        <i data-lucide="sparkles" class="text-white w-5 h-5"></i>
+      </a>
+      <span class="font-extrabold text-2xl tracking-tight text-white">CareerSync</span>
+    </div>
+    <nav class="flex items-center gap-6">
+      <a href="/profile.html" class="text-gray-300 hover:text-white transition font-medium text-sm">Profile</a>
+      <a href="/radar.html" class="text-gray-300 hover:text-white transition font-medium text-sm">Opportunity Radar</a>
+    </nav>
+  </header>
+
+  <!-- Main Workspace Layout -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Left Column: Job Spec (4 cols) -->
+    <div class="lg:col-span-4 flex flex-col gap-6 no-print">
+      
+      <div class="glass-panel p-6 rounded-2xl flex flex-col gap-4">
+        <div class="flex items-center gap-2 text-xs font-bold text-mint uppercase tracking-wider">
+          <i data-lucide="target" class="w-4 h-4"></i> Target Opportunity
+        </div>
+        <div>
+          <h2 id="job-title" class="text-xl font-bold text-white">Loading Job...</h2>
+          <p id="job-company" class="text-gray-400 text-sm font-semibold mt-0.5">...</p>
+        </div>
+
+        <div class="flex flex-col gap-2.5 border-t border-white/5 pt-4 text-xs text-gray-400">
+          <div class="flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i>
+            <span id="job-location">...</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4 text-gray-500"></i>
+            <span id="job-duration">...</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="wallet" class="w-4 h-4 text-gray-500"></i>
+            <span id="job-stipend" class="text-mint font-medium">...</span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="border-t border-white/5 pt-4">
+          <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Responsibilities Summary</span>
+          <p id="job-desc" class="text-xs text-gray-400 leading-relaxed max-h-48 overflow-y-auto pr-1">
+            ...
+          </p>
+        </div>
+      </div>
+
+      <!-- Baseline Profile Summary Card -->
+      <div class="glass-panel p-6 rounded-2xl flex flex-col gap-4">
+        <div class="flex items-center gap-2 text-xs font-bold text-nebula uppercase tracking-wider">
+          <i data-lucide="user" class="w-4 h-4"></i> Your Baseline Profile
+        </div>
+        <div>
+          <h3 id="prof-name-display" class="text-base font-bold text-white">Loading Profile...</h3>
+          <p id="prof-location-display" class="text-gray-400 text-xs mt-0.5">Location: ...</p>
+        </div>
+        
+        <!-- Extracted Details Summary -->
+        <div class="border-t border-white/5 pt-3 flex flex-col gap-3">
+          <div>
+            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Education</span>
+            <div id="prof-edu-display" class="flex flex-col gap-1.5 text-[11px] text-gray-300">
+              <!-- Education list -->
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Experience</span>
+            <div id="prof-exp-display" class="flex flex-col gap-1.5 text-[11px] text-gray-300">
+              <!-- Experience list -->
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Projects</span>
+            <div id="prof-proj-display" class="flex flex-col gap-1.5 text-[11px] text-gray-300">
+              <!-- Projects list -->
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-white/5 pt-3 flex flex-col gap-2">
+          <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Verified Skills</span>
+          <div id="prof-skills-display" class="flex flex-wrap gap-1.5">
+            <!-- Skills tags inject here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Panel -->
+      <div class="glass-panel p-6 rounded-2xl flex flex-col gap-4">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">AI Tailoring Actions</h3>
+        <button onclick="tailorAssets()" class="w-full py-3 rounded-xl bg-gradient-to-r from-nebula to-purple-600 hover:from-nebula/90 hover:to-purple-600/90 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-nebula/20">
+          <i data-lucide="wand-2" class="w-4 h-4"></i> Regenerate / Tailor Now
+        </button>
+        <button onclick="window.location.href='/radar.html'" class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-bold text-sm border border-white/10 transition flex items-center justify-center gap-2">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Radar
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Document Workspace Tabs (8 cols) -->
+    <div class="lg:col-span-8 flex flex-col gap-6">
+      
+      <!-- Tabs Selector (no-print) -->
+      <div class="flex border-b border-white/5 no-print">
+        <button onclick="switchTab('resume')" id="tab-btn-resume" class="px-6 py-3 border-b-2 border-nebula font-bold text-sm text-white focus:outline-none flex items-center gap-2 transition">
+          <i data-lucide="file-text" class="w-4 h-4"></i> Tailored ATS Resume
+        </button>
+        <button onclick="switchTab('letter')" id="tab-btn-letter" class="px-6 py-3 border-b-2 border-transparent font-medium text-sm text-gray-400 hover:text-white focus:outline-none flex items-center gap-2 transition">
+          <i data-lucide="mail" class="w-4 h-4"></i> Cover Letter
+        </button>
+        <button onclick="switchTab('sop')" id="tab-btn-sop" class="px-6 py-3 border-b-2 border-transparent font-medium text-sm text-gray-400 hover:text-white focus:outline-none flex items-center gap-2 transition">
+          <i data-lucide="graduation-cap" class="w-4 h-4"></i> SOP / Statement
+        </button>
+      </div>
+
+      <!-- Loading State (no-print) -->
+      <div id="tailor-loading" class="glass-panel p-20 rounded-2xl flex flex-col items-center justify-center gap-4 text-center no-print">
+        <div class="w-12 h-12 rounded-full border-4 border-t-nebula border-r-transparent border-b-mint border-l-transparent animate-spin"></div>
+        <div>
+          <h3 class="text-lg font-bold text-white">Tailoring Application</h3>
+          <p class="text-gray-400 text-xs mt-1">Filtering baseline profile and wording experience bullet points...</p>
+        </div>
+      </div>
+
+      <!-- Main Workspace Panels -->
+      <div id="workspace-content" class="hidden">
+        
+        <!-- Tab 1: Tailored Resume -->
+        <div id="panel-resume" class="flex flex-col gap-4">
+          <!-- Print Button Header (no-print) -->
+          <div class="flex justify-between items-center bg-white/5 border border-white/10 p-4 rounded-xl no-print">
+            <div class="text-xs text-gray-400 flex items-center gap-2">
+              <i data-lucide="info" class="text-mint w-4 h-4"></i>
+              This is a standard Harvard-style single column resume optimized for ATS screeners.
+            </div>
+            <button onclick="printResume()" class="px-5 py-2 rounded-xl bg-mint hover:bg-mint/80 text-space font-extrabold text-xs transition flex items-center gap-1.5 shadow-lg shadow-mint/10">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Export / Print PDF
+            </button>
+          </div>
+
+          <!-- The printable resume element (styled in Times New Roman) -->
+          <div class="screen-resume-preview p-12 rounded-2xl w-full mx-auto print-page shadow-xl text-black">
+            <div id="resume-document" class="resume-container">
+              <!-- Dynamically populated ATS Resume -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Cover Letter -->
+        <div id="panel-letter" class="hidden flex flex-col gap-4 no-print">
+          <div class="flex justify-between items-center bg-white/5 border border-white/10 p-4 rounded-xl">
+            <span class="text-xs text-gray-400">Review and copy your tailored cover letter below.</span>
+            <div class="flex items-center gap-2">
+              <button onclick="copyToClipboard('letter-text')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-bold transition flex items-center gap-1.5">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Text
+              </button>
+              <button onclick="downloadAsTxt('letter-text', 'Cover_Letter.txt')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-bold transition flex items-center gap-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download TXT
+              </button>
+            </div>
+          </div>
+          <!-- Textarea Editable Cover Letter -->
+          <textarea id="letter-text" rows="20" class="w-full p-6 bg-black/30 border border-white/10 rounded-2xl text-gray-300 font-mono text-sm leading-relaxed focus:outline-none focus:border-nebula resize-none"></textarea>
+        </div>
+
+        <!-- Tab 3: SOP -->
+        <div id="panel-sop" class="hidden flex flex-col gap-4 no-print">
+          <div class="flex justify-between items-center bg-white/5 border border-white/10 p-4 rounded-xl">
+            <span class="text-xs text-gray-400">Review and copy your custom Statement of Purpose below.</span>
+            <div class="flex items-center gap-2">
+              <button onclick="copyToClipboard('sop-text')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-bold transition flex items-center gap-1.5">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Text
+              </button>
+              <button onclick="downloadAsTxt('sop-text', 'Statement_of_Purpose.txt')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-bold transition flex items-center gap-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download TXT
+              </button>
+            </div>
+          </div>
+          <!-- Textarea Editable SOP -->
+          <textarea id="sop-text" rows="20" class="w-full p-6 bg-black/30 border border-white/10 rounded-2xl text-gray-300 font-mono text-sm leading-relaxed focus:outline-none focus:border-nebula resize-none"></textarea>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 text-center text-gray-500 text-xs border-t border-white/5 no-print">
+    &copy; 2026 CareerSync. Tailored assets are strictly constrained to verified facts in your profile.
+  </footer>
+
+  <script>
+    let selectedJob = null;
+    let userProfile = null;
+    let tailoredAssets = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      // 1. Retrieve job details from localStorage
+      const jobData = localStorage.getItem("selectedJob");
+      if (!jobData) {
+        alert("No opportunity selected. Redirecting back to radar.");
+        window.location.href = "/radar.html";
+        return;
+      }
+      selectedJob = JSON.parse(jobData);
+      
+      // Populate target job info
+      document.getElementById("job-title").innerText = selectedJob.title;
+      document.getElementById("job-company").innerText = selectedJob.company;
+      document.getElementById("job-location").innerText = selectedJob.location;
+      document.getElementById("job-duration").innerText = selectedJob.duration;
+      document.getElementById("job-stipend").innerText = selectedJob.stipend;
+      document.getElementById("job-desc").innerText = selectedJob.description || "No description details available.";
+
+      // 2. Load profile
+      try {
+        const response = await fetch("/api/get-profile");
+        userProfile = await response.json();
+        if (userProfile) {
+          document.getElementById("prof-name-display").innerText = userProfile.name || "Anonymous User";
+          const locs = userProfile.preferred_locations && userProfile.preferred_locations.length > 0 
+            ? userProfile.preferred_locations.join(", ") 
+            : (userProfile.user_location || "Not Specified");
+          document.getElementById("prof-location-display").innerText = `Home: ${userProfile.user_location || 'Not Specified'} | Pref: ${locs}`;
+          
+          // Populate Education summary
+          const eduContainer = document.getElementById("prof-edu-display");
+          eduContainer.innerHTML = "";
+          if (userProfile.education && userProfile.education.length > 0) {
+            userProfile.education.forEach(edu => {
+              const div = document.createElement("div");
+              div.className = "border-l border-white/10 pl-2 py-0.5";
+              div.innerHTML = `<span class="font-semibold text-white">${edu.degree || 'Degree'}</span> at <span class="text-gray-400">${edu.institution || 'School'}</span>`;
+              eduContainer.appendChild(div);
+            });
+          } else {
+            eduContainer.innerHTML = "<span class='text-gray-500 italic'>None listed</span>";
+          }
+
+          // Populate Experience summary
+          const expContainer = document.getElementById("prof-exp-display");
+          expContainer.innerHTML = "";
+          if (userProfile.experience && userProfile.experience.length > 0) {
+            userProfile.experience.forEach(exp => {
+              const div = document.createElement("div");
+              div.className = "border-l border-white/10 pl-2 py-0.5";
+              div.innerHTML = `<span class="font-semibold text-white">${exp.role || 'Role'}</span> - <span class="text-gray-400">${exp.company || 'Company'}</span>`;
+              expContainer.appendChild(div);
+            });
+          } else {
+            expContainer.innerHTML = "<span class='text-gray-500 italic'>None listed</span>";
+          }
+
+          // Populate Projects summary
+          const projContainer = document.getElementById("prof-proj-display");
+          projContainer.innerHTML = "";
+          if (userProfile.projects && userProfile.projects.length > 0) {
+            userProfile.projects.forEach(proj => {
+              const div = document.createElement("div");
+              div.className = "border-l border-white/10 pl-2 py-0.5";
+              div.innerHTML = `<span class="font-semibold text-white">${proj.title || 'Project'}</span>`;
+              projContainer.appendChild(div);
+            });
+          } else {
+            projContainer.innerHTML = "<span class='text-gray-500 italic'>None listed</span>";
+          }
+
+          const skillsContainer = document.getElementById("prof-skills-display");
+          skillsContainer.innerHTML = "";
+          if (userProfile.skills && userProfile.skills.length > 0) {
+            userProfile.skills.slice(0, 8).forEach(skill => {
+              const tag = document.createElement("span");
+              tag.className = "px-2 py-0.5 rounded bg-nebula/10 text-nebula text-[10px] border border-nebula/25 font-semibold";
+              tag.innerText = skill;
+              skillsContainer.appendChild(tag);
+            });
+          } else {
+            skillsContainer.innerHTML = "<span class='text-xs text-gray-500'>No skills found</span>";
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load user profile", err);
+      }
+
+      // 3. Tailor assets
+      tailorAssets();
+      lucide.createIcons();
+    });
+
+    async function tailorAssets() {
+      const loader = document.getElementById("tailor-loading");
+      const content = document.getElementById("workspace-content");
+
+      content.classList.add("hidden");
+      loader.classList.remove("hidden");
+
+      try {
+        const response = await fetch("/api/tailor", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            profile: userProfile,
+            job_details: selectedJob
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to tailor documents.");
+        }
+
+        tailoredAssets = await response.json();
+        
+        if (tailoredAssets.api_exhausted) {
+          alert("Gemini AI API rate limit or daily quota exceeded. CareerSync has gracefully fallen back to rendering your baseline profile details for the resume. Cover Letter and SOP AI generation are temporarily offline.");
+        }
+        
+        // Populate inputs & templates
+        populateResume(tailoredAssets.tailored_resume);
+        document.getElementById("letter-text").value = tailoredAssets.cover_letter;
+        document.getElementById("sop-text").value = tailoredAssets.sop;
+
+        loader.classList.add("hidden");
+        content.classList.remove("hidden");
+      } catch (err) {
+        alert("Error tailoring application: " + err.message);
+        loader.classList.add("hidden");
+      }
+    }
+
+    // Populate the HTML ATS resume
+    function populateResume(resume) {
+      const container = document.getElementById("resume-document");
+      container.innerHTML = "";
+
+      // Contact Header
+      let linksHtml = [];
+      if (resume.links?.linkedin) linksHtml.push(`LinkedIn: ${resume.links.linkedin}`);
+      if (resume.links?.github) linksHtml.push(`GitHub: ${resume.links.github}`);
+      if (resume.links?.portfolio) linksHtml.push(`Portfolio: ${resume.links.portfolio}`);
+      
+      const headerHtml = `
+        <div class="resume-header pb-4 border-b border-gray-400">
+          <h1 class="text-center font-bold uppercase tracking-wider text-xl">${resume.name || 'Your Name'}</h1>
+          <div class="resume-header-details text-center text-xs mt-1 text-gray-700">
+            Email: ${resume.email || 'your.email@example.com'} | Phone: ${resume.phone || '+91 9876543210'}
+            ${linksHtml.length > 0 ? `<br>${linksHtml.join(' | ')}` : ''}
+          </div>
+        </div>
+      `;
+      container.innerHTML += headerHtml;
+
+      // Summary
+      if (resume.summary) {
+        const summaryHtml = `
+          <div class="resume-section mt-4">
+            <h2 class="resume-section-title font-bold text-xs uppercase border-b border-gray-600 pb-0.5">Professional Summary</h2>
+            <p class="text-xs mt-1.5 leading-relaxed text-gray-800">${resume.summary}</p>
+          </div>
+        `;
+        container.innerHTML += summaryHtml;
+      }
+
+      // Education
+      if (resume.education && resume.education.length > 0) {
+        const items = resume.education.map(edu => `
+          <div class="resume-item mt-2">
+            <div class="resume-item-header flex justify-between font-bold text-xs text-black">
+              <span>${edu.institution}</span>
+              <span>${edu.duration}</span>
+            </div>
+            <div class="resume-item-sub flex justify-between text-xs italic text-gray-700">
+              <span>${edu.degree}${edu.field ? ` in ${edu.field}` : ''}</span>
+              <span>${edu.grade ? `Grade: ${edu.grade}` : ''}</span>
+            </div>
+          </div>
+        `).join("");
+
+        const eduHtml = `
+          <div class="resume-section mt-4">
+            <h2 class="resume-section-title font-bold text-xs uppercase border-b border-gray-600 pb-0.5">Education</h2>
+            ${items}
+          </div>
+        `;
+        container.innerHTML += eduHtml;
+      }
+
+      // Experience
+      if (resume.experience && resume.experience.length > 0) {
+        const items = resume.experience.map(exp => {
+          // Process descriptions to split by newline for bullet points
+          const bullets = exp.description.split("\n").filter(line => line.trim().length > 0);
+          const bulletsHtml = bullets.map(b => `<li class="mb-1 leading-relaxed">${b.replace(/^-\s*/, '')}</li>`).join("");
+
+          return `
+            <div class="resume-item mt-2">
+              <div class="resume-item-header flex justify-between font-bold text-xs text-black">
+                <span>${exp.company}</span>
+                <span>${exp.duration}</span>
+              </div>
+              <div class="resume-item-sub flex justify-between text-xs italic text-gray-700">
+                <span>${exp.role}</span>
+                <span>${exp.location || ''}</span>
+              </div>
+              <ul class="list-disc pl-5 mt-1 text-xs text-gray-800">
+                ${bulletsHtml}
+              </ul>
+            </div>
+          `;
+        }).join("");
+
+        const expHtml = `
+          <div class="resume-section mt-4">
+            <h2 class="resume-section-title font-bold text-xs uppercase border-b border-gray-600 pb-0.5">Professional Experience</h2>
+            ${items}
+          </div>
+        `;
+        container.innerHTML += expHtml;
+      }
+
+      // Projects
+      if (resume.projects && resume.projects.length > 0) {
+        const items = resume.projects.map(proj => {
+          const bullets = proj.description.split("\n").filter(line => line.trim().length > 0);
+          const bulletsHtml = bullets.map(b => `<li class="mb-1 leading-relaxed">${b.replace(/^-\s*/, '')}</li>`).join("");
+          const techLabel = proj.technologies && proj.technologies.length > 0 
+            ? `<div class="text-[10px] font-bold text-gray-700 mt-1.5 italic">Technologies: ${proj.technologies.join(", ")}</div>` 
+            : '';
+
+          return `
+            <div class="resume-item mt-2">
+              <div class="resume-item-header flex justify-between font-bold text-xs text-black">
+                <span>${proj.title}</span>
+                <span>${proj.link ? `<a href="${proj.link}" target="_blank" class="underline text-blue-900">${proj.link}</a>` : ''}</span>
+              </div>
+              <ul class="list-disc pl-5 mt-1 text-xs text-gray-800">
+                ${bulletsHtml}
+              </ul>
+              ${techLabel}
+            </div>
+          `;
+        }).join("");
+
+        const projHtml = `
+          <div class="resume-section mt-4">
+            <h2 class="resume-section-title font-bold text-xs uppercase border-b border-gray-600 pb-0.5">Projects</h2>
+            ${items}
+          </div>
+        `;
+        container.innerHTML += projHtml;
+      }
+
+      // Skills
+      if (resume.skills && resume.skills.length > 0) {
+        const skillsHtml = `
+          <div class="resume-section mt-4">
+            <h2 class="resume-section-title font-bold text-xs uppercase border-b border-gray-600 pb-0.5">Technical Skills</h2>
+            <p class="text-xs mt-1.5 leading-relaxed text-gray-800">${resume.skills.join(", ")}</p>
+          </div>
+        `;
+        container.innerHTML += skillsHtml;
+      }
+    }
+
+    // Switch active workspace tab
+    function switchTab(tab) {
+      const panelResume = document.getElementById("panel-resume");
+      const panelLetter = document.getElementById("panel-letter");
+      const panelSop = document.getElementById("panel-sop");
+      
+      const btnResume = document.getElementById("tab-btn-resume");
+      const btnLetter = document.getElementById("tab-btn-letter");
+      const btnSop = document.getElementById("tab-btn-sop");
+
+      // Hide all panels
+      panelResume.classList.add("hidden");
+      panelLetter.classList.add("hidden");
+      panelSop.classList.add("hidden");
+
+      // Reset button classes
+      [btnResume, btnLetter, btnSop].forEach(btn => {
+        btn.className = "px-6 py-3 border-b-2 border-transparent font-medium text-sm text-gray-400 hover:text-white focus:outline-none flex items-center gap-2 transition";
+      });
+
+      // Show selected panel
+      if (tab === "resume") {
+        panelResume.classList.remove("hidden");
+        btnResume.className = "px-6 py-3 border-b-2 border-nebula font-bold text-sm text-white focus:outline-none flex items-center gap-2 transition";
+      } else if (tab === "letter") {
+        panelLetter.classList.remove("hidden");
+        btnLetter.className = "px-6 py-3 border-b-2 border-nebula font-bold text-sm text-white focus:outline-none flex items-center gap-2 transition";
+      } else if (tab === "sop") {
+        panelSop.classList.remove("hidden");
+        btnSop.className = "px-6 py-3 border-b-2 border-nebula font-bold text-sm text-white focus:outline-none flex items-center gap-2 transition";
+      }
+    }
+
+    // Copy to clipboard helper
+    function copyToClipboard(elementId) {
+      const text = document.getElementById(elementId).value;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard!");
+      }).catch(err => {
+        alert("Failed to copy text: " + err);
+      });
+    }
+
+    // Download text as file helper
+    function downloadAsTxt(elementId, filename) {
+      const text = document.getElementById(elementId).value;
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    // Trigger window print for PDF exporting
+    function printResume() {
+      window.print();
+    }
+  </script>
+</body>
+</html>

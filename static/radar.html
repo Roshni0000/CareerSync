@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opportunity Radar - CareerSync</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            space: '#060a13',
+            nebula: '#6366f1',
+            mint: '#10b981',
+            amber: '#f59e0b',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-space flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between no-print">
+    <div class="flex items-center gap-3">
+      <a href="/" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-nebula to-mint flex items-center justify-center shadow-lg shadow-nebula/30">
+        <i data-lucide="sparkles" class="text-white w-5 h-5"></i>
+      </a>
+      <span class="font-extrabold text-2xl tracking-tight text-white">CareerSync</span>
+    </div>
+    <nav class="flex items-center gap-6">
+      <a href="/profile.html" class="text-gray-300 hover:text-white transition font-medium text-sm">Profile</a>
+      <a href="/radar.html" class="text-white font-semibold text-sm border-b-2 border-nebula pb-1">Opportunity Radar</a>
+    </nav>
+  </header>
+
+  <!-- Main Grid -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-8 flex flex-col gap-6">
+    
+    <!-- Title & Top Search Controls -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold text-white flex items-center gap-3">
+          <i data-lucide="radar" class="text-mint animate-pulse w-8 h-8"></i>
+          Opportunity Radar
+        </h1>
+        <p class="text-gray-400 text-sm mt-1">Real-time Internshala aggregation matched against your profile</p>
+      </div>
+
+      <!-- Search Bar override & Custom Job Trigger -->
+      <div class="flex items-center gap-3 w-full md:w-auto flex-wrap md:flex-nowrap">
+        <div class="relative flex-grow min-w-[200px] max-w-md">
+          <i data-lucide="search" class="absolute left-3.5 top-3.5 text-gray-500 w-4 h-4"></i>
+          <input type="text" id="search-input" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-nebula" placeholder="Search another keyword (e.g. Frontend)">
+        </div>
+        <button onclick="fetchRadarFeed(true)" class="px-5 py-3 rounded-xl bg-nebula hover:bg-nebula/80 text-white font-bold text-sm transition shadow-lg shadow-nebula/20 flex items-center gap-1.5 shrink-0">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i> Scan
+        </button>
+        <button onclick="openCustomJobModal()" class="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-sm border border-white/10 transition flex items-center gap-1.5 shrink-0 shadow-lg shadow-black/10">
+          <i data-lucide="plus" class="w-4 h-4 text-mint"></i> Custom Job
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters & Preferences Summary Bar -->
+    <div class="glass-panel p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Preferences Info -->
+      <div class="flex flex-col gap-1 text-xs text-gray-400">
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-nebula"></i>
+          <span class="font-semibold text-gray-300">Preferred Locations:</span>
+          <span id="pref-locations-display" class="text-gray-400">Loading profile locations...</span>
+        </div>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <i data-lucide="sliders" class="w-3.5 h-3.5 text-nebula"></i>
+          <span class="font-semibold text-gray-300">Preferences:</span>
+          <span id="pref-types-display" class="text-gray-400">Loading profile job types...</span>
+        </div>
+      </div>
+
+      <!-- Platform Checkboxes -->
+      <div class="flex items-center gap-4 border-t border-white/5 md:border-t-0 pt-3 md:pt-0 flex-wrap">
+        <span class="font-bold text-xs uppercase tracking-wider text-gray-500">Target Platforms:</span>
+        <div class="flex items-center gap-3">
+          <label class="flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer">
+            <input type="checkbox" id="check-internshala" class="rounded bg-white/5 border-white/10 text-nebula focus:ring-nebula h-3.5 w-3.5" checked>
+            <span>Internshala (Live)</span>
+          </label>
+          <label class="flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer">
+            <input type="checkbox" id="check-unstop" class="rounded bg-white/5 border-white/10 text-nebula focus:ring-nebula h-3.5 w-3.5" checked>
+            <span>Unstop</span>
+          </label>
+          <label class="flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer">
+            <input type="checkbox" id="check-linkedin" class="rounded bg-white/5 border-white/10 text-nebula focus:ring-nebula h-3.5 w-3.5" checked>
+            <span>LinkedIn</span>
+          </label>
+          <label class="flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer">
+            <input type="checkbox" id="check-naukri" class="rounded bg-white/5 border-white/10 text-nebula focus:ring-nebula h-3.5 w-3.5" checked>
+            <span>Naukri</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Keywords Badge Bar -->
+    <div class="flex items-center gap-2 flex-wrap text-sm text-gray-400">
+      <span class="font-semibold text-xs uppercase tracking-wider text-gray-500">Scanning Targets:</span>
+      <div id="target-tags" class="flex gap-2">
+        <!-- Tags showing parsed skills being queried -->
+      </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="flex-grow flex flex-col items-center justify-center py-20 gap-4">
+      <div class="w-16 h-16 rounded-full border-4 border-t-nebula border-r-transparent border-b-mint border-l-transparent animate-spin"></div>
+      <div class="text-center">
+        <h3 class="text-lg font-bold text-white">Aggregating Opportunities</h3>
+        <p class="text-gray-400 text-xs mt-1">Scraping Internshala & calculating AI match scores...</p>
+      </div>
+    </div>
+
+    <!-- Empty Feed Screen -->
+    <div id="empty-screen" class="hidden flex-grow flex flex-col items-center justify-center py-20 gap-4 text-center">
+      <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500">
+        <i data-lucide="alert-circle" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-white">No Opportunities Found</h3>
+        <p class="text-gray-400 text-xs mt-1">Try setting up your profile or search for a specific keyword above.</p>
+      </div>
+      <a href="/profile.html" class="px-6 py-2.5 rounded-xl bg-nebula hover:bg-nebula/85 text-white font-bold text-sm transition">Setup Master Profile</a>
+    </div>
+
+    <!-- Opportunity List Grid -->
+    <div id="opportunity-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Opportunity Cards Inject Here -->
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 text-center text-gray-500 text-xs border-t border-white/5 no-print">
+    &copy; 2026 CareerSync. Dynamic scraper aggregates live from Internshala.
+  </footer>
+
+  <script>
+    let userProfile = null;
+    let jobListings = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      // 1. Get user profile
+      try {
+        const response = await fetch("/api/get-profile");
+        userProfile = await response.json();
+        if (userProfile) {
+          // Display user preferences summary
+          const locs = userProfile.preferred_locations && userProfile.preferred_locations.length > 0
+            ? userProfile.preferred_locations.join(", ")
+            : (userProfile.user_location || "Not specified (Default: Remote/Home)");
+          document.getElementById("pref-locations-display").innerText = locs;
+          
+          const types = userProfile.preferred_job_types && userProfile.preferred_job_types.length > 0
+            ? userProfile.preferred_job_types.join(", ")
+            : "Internships, Jobs, Hackathons";
+          document.getElementById("pref-types-display").innerText = types;
+        }
+      } catch (err) {
+        console.error("Failed to load user profile", err);
+      }
+
+      // 2. Fetch radar feed
+      fetchRadarFeed();
+      lucide.createIcons();
+    });
+
+    async function fetchRadarFeed(isSearchOverride = false) {
+      const grid = document.getElementById("opportunity-grid");
+      const loader = document.getElementById("loading-screen");
+      const empty = document.getElementById("empty-screen");
+      const searchInput = document.getElementById("search-input");
+      const targetTags = document.getElementById("target-tags");
+
+      grid.classList.add("hidden");
+      empty.classList.add("hidden");
+      loader.classList.remove("hidden");
+
+      // Set target tag display
+      let keyword = searchInput.value.trim();
+      targetTags.innerHTML = "";
+      if (keyword) {
+        targetTags.innerHTML = `<span class="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-white text-xs font-semibold">${keyword}</span>`;
+      } else if (userProfile && userProfile.skills && userProfile.skills.length > 0) {
+        userProfile.skills.slice(0, 3).forEach(skill => {
+          const span = document.createElement("span");
+          span.className = "px-2.5 py-1 rounded bg-nebula/15 border border-nebula/35 text-nebula text-xs font-semibold";
+          span.innerText = skill;
+          targetTags.appendChild(span);
+        });
+      } else {
+        targetTags.innerHTML = `<span class="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-white text-xs font-semibold">python (Default)</span>`;
+      }
+
+      // Collect selected platforms
+      const selectedPlatforms = [];
+      if (document.getElementById("check-internshala").checked) selectedPlatforms.push("Internshala");
+      if (document.getElementById("check-unstop").checked) selectedPlatforms.push("Unstop");
+      if (document.getElementById("check-linkedin").checked) selectedPlatforms.push("LinkedIn");
+      if (document.getElementById("check-naukri").checked) selectedPlatforms.push("Naukri");
+
+      let url = `/api/opportunities?platforms=${encodeURIComponent(selectedPlatforms.join(","))}`;
+      if (keyword) {
+        url += `&keyword=${encodeURIComponent(keyword)}`;
+      }
+
+      try {
+        const response = await fetch(url);
+        jobListings = await response.json();
+        
+        loader.classList.add("hidden");
+
+        if (jobListings && jobListings.length > 0) {
+          renderJobCards(jobListings);
+          grid.classList.remove("hidden");
+        } else {
+          empty.classList.remove("hidden");
+        }
+      } catch (err) {
+        console.error("Failed fetching opportunities", err);
+        loader.classList.add("hidden");
+        empty.classList.remove("hidden");
+      }
+    }
+
+    function renderJobCards(jobs) {
+      const grid = document.getElementById("opportunity-grid");
+      grid.innerHTML = "";
+
+      jobs.forEach((job, idx) => {
+        const score = job.score || 50;
+        const mismatch = job.location_mismatch || false;
+        
+        // Color coding for score
+        let badgeColor = "bg-gray-800 text-gray-400 border-gray-700";
+        let cardBorderClass = "border-white/5";
+        let cardBgClass = "bg-glass-bg";
+        
+        if (mismatch) {
+          badgeColor = "bg-red-950/20 text-red-400 border-red-500/20";
+          cardBorderClass = "border-red-500/25";
+          cardBgClass = "bg-red-950/5";
+        } else if (score >= 80) {
+          badgeColor = "bg-mint/10 text-mint border-mint/30 shadow-lg shadow-mint/5";
+          cardBorderClass = "border-mint/10 hover:border-mint/30";
+        } else if (score >= 60) {
+          badgeColor = "bg-amber/10 text-amber border-amber/30";
+          cardBorderClass = "border-amber/10 hover:border-amber/30";
+        }
+
+        // Skills html tags
+        const skillsHtml = job.skills.slice(0, 4).map(skill => 
+          `<span class="px-2 py-0.5 rounded bg-white/5 text-gray-300 text-[10px] font-medium border border-white/5">${skill}</span>`
+        ).join("");
+
+        const reasonsHtml = job.reasons.map(reason => {
+          const isWarning = reason.includes("Location mismatch");
+          return `<li class="text-xs ${isWarning ? 'text-red-400' : 'text-gray-300'} flex items-start gap-2 leading-relaxed">
+            <span class="${isWarning ? 'text-red-500' : 'text-mint'} shrink-0 mt-0.5">${isWarning ? '&#9888;' : '&#10004;'}</span>
+            <span>${reason}</span>
+          </li>`;
+        }).join("");
+
+        const gapsHtml = job.gaps && job.gaps.length > 0 
+          ? job.gaps.map(gap => `<span class="px-2 py-0.5 rounded bg-red-950/20 text-red-400 text-[9px] border border-red-500/10 font-semibold">${gap}</span>`).join("")
+          : `<span class="text-xs text-mint">None! Excellent fit.</span>`;
+
+        const card = document.createElement("div");
+        card.className = `glass-panel glass-panel-interactive p-6 rounded-2xl flex flex-col justify-between gap-5 relative group border ${cardBorderClass} ${cardBgClass}`;
+        card.innerHTML = `
+          <!-- Top Row: Score Badge & Link -->
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 rounded-full text-xs font-bold border ${badgeColor}">
+                ${score}% Match
+              </span>
+              ${mismatch ? `
+                <span class="px-2 py-1 rounded-full text-[9px] font-bold bg-red-950/20 text-red-400 border border-red-500/25 flex items-center gap-1">
+                  &#9888; Mismatch
+                </span>
+              ` : ''}
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-bold text-gray-500 px-2 py-0.5 rounded bg-white/5 uppercase tracking-wider">${job.source || 'Internshala'}</span>
+              <a href="${job.link}" target="_blank" class="text-gray-500 hover:text-white transition">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Mid Row: Job Info -->
+          <div>
+            <h3 class="text-lg font-bold text-white group-hover:text-nebula transition-colors truncate" title="${job.title}">
+              ${job.title}
+            </h3>
+            <p class="text-gray-400 text-sm font-semibold truncate mt-0.5">${job.company}</p>
+            
+            <div class="flex items-center gap-4 mt-3 text-xs text-gray-500">
+              <span class="flex items-center gap-1 ${mismatch ? 'text-red-400 font-medium' : ''}">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 ${mismatch ? 'text-red-400' : 'text-gray-500'}"></i> ${job.location}
+              </span>
+              <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-gray-500"></i> ${job.duration}</span>
+            </div>
+            
+            <div class="flex items-center gap-1 mt-1 text-xs text-gray-500">
+              <i data-lucide="wallet" class="w-3.5 h-3.5 text-gray-500"></i> 
+              <span class="text-mint font-medium">${job.stipend}</span>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Skills Required -->
+          <div class="flex flex-wrap gap-1.5 border-t border-white/5 pt-3">
+            ${skillsHtml}
+          </div>
+
+          <!-- AI Matching Insights Panel -->
+          <div class="border-t border-white/5 pt-3 flex flex-col gap-2">
+            <button onclick="toggleInsights(${idx})" class="text-[11px] font-bold text-nebula hover:underline flex items-center justify-between focus:outline-none">
+              <span>View AI Matching Insights</span>
+              <i data-lucide="chevron-down" id="chevron-${idx}" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+            </button>
+            
+            <div id="insights-${idx}" class="hidden flex flex-col gap-3 mt-2 border-l border-white/5 pl-3">
+              <div>
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Matching & Constraint Status:</span>
+                <ul class="flex flex-col gap-1.5 list-none">
+                  ${reasonsHtml}
+                </ul>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Gaps / Skills to Learn:</span>
+                <div class="flex flex-wrap gap-1.5 mt-1">
+                  ${gapsHtml}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button onclick="goToTailorPage(${idx})" class="w-full py-3 rounded-xl bg-white/5 hover:bg-nebula text-white font-bold text-sm transition-all border border-white/10 hover:border-nebula flex items-center justify-center gap-2 shadow-lg shadow-black/10">
+            <i data-lucide="cpu" class="w-4 h-4"></i> Tailor & Apply
+          </button>
+        `;
+
+        grid.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function toggleInsights(idx) {
+      const panel = document.getElementById(`insights-${idx}`);
+      const chevron = document.getElementById(`chevron-${idx}`);
+      const isHidden = panel.classList.contains("hidden");
+
+      if (isHidden) {
+        panel.classList.remove("hidden");
+        chevron.style.transform = "rotate(180deg)";
+      } else {
+        panel.classList.add("hidden");
+        chevron.style.transform = "rotate(0deg)";
+      }
+    }
+
+    function goToTailorPage(idx) {
+      const job = jobListings[idx];
+      // Save targeted job to localStorage so tailor.html can retrieve it
+      localStorage.setItem("selectedJob", JSON.stringify(job));
+      window.location.href = "/tailor.html";
+    }
+
+    function openCustomJobModal() {
+      document.getElementById("custom-job-modal").classList.remove("hidden");
+      lucide.createIcons();
+    }
+
+    function closeCustomJobModal() {
+      document.getElementById("custom-job-modal").classList.add("hidden");
+    }
+
+    function submitCustomJob() {
+      const title = document.getElementById("cust-title").value.trim();
+      const company = document.getElementById("cust-company").value.trim();
+      const location = document.getElementById("cust-location").value.trim();
+      const duration = document.getElementById("cust-duration").value.trim() || "Not Specified";
+      const stipend = document.getElementById("cust-stipend").value.trim() || "Not Specified";
+      const skillsText = document.getElementById("cust-skills").value.trim();
+      const description = document.getElementById("cust-desc").value.trim();
+      const link = document.getElementById("cust-link").value.trim() || "#";
+
+      if (!title || !company || !location || !description) {
+        alert("Please fill in all compulsory fields marked with *.");
+        return;
+      }
+
+      const skills = skillsText ? skillsText.split(",").map(s => s.trim()).filter(s => s) : [];
+
+      const customJob = {
+        id: `custom-${Date.now()}`,
+        title: title,
+        company: company,
+        location: location,
+        stipend: stipend,
+        duration: duration,
+        skills: skills,
+        description: description,
+        link: link,
+        posted_time: "Custom Added",
+        source: "Custom Platform",
+        score: 95,
+        reasons: ["Manually selected target opportunity."],
+        gaps: []
+      };
+
+      // Save to localStorage and redirect
+      localStorage.setItem("selectedJob", JSON.stringify(customJob));
+      window.location.href = "/tailor.html";
+    }
+  </script>
+
+  <!-- Tailor Custom Job Modal Dialog -->
+  <div id="custom-job-modal" class="fixed inset-0 bg-black/75 backdrop-filter backdrop-blur-md flex items-center justify-center p-4 z-50 hidden no-print">
+    <div class="glass-panel w-full max-w-2xl rounded-2xl border border-white/10 p-8 flex flex-col gap-6 shadow-2xl relative">
+      
+      <!-- Close Button -->
+      <button onclick="closeCustomJobModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white transition text-2xl font-bold focus:outline-none">
+        &times;
+      </button>
+
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <i data-lucide="plus-circle" class="text-mint w-5 h-5"></i>
+          Tailor a Custom Job
+        </h2>
+        <p class="text-gray-400 text-xs mt-1">Found an opportunity on LinkedIn, Naukri, or another site? Paste the details below to tailor your application instantly.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Job Title *</label>
+          <input type="text" id="cust-title" class="w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. Software Developer Intern">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Company / Organization *</label>
+          <input type="text" id="cust-company" class="w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. Google India">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Location *</label>
+          <input type="text" id="cust-location" class="w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. Remote / Mumbai">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Duration / Type</label>
+          <input type="text" id="cust-duration" class="w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. 6 Months / Full-time">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Stipend / Salary</label>
+          <input type="text" id="cust-stipend" class="w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. ₹ 50,000 /month">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Required Skills (Comma separated)</label>
+        <input type="text" id="cust-skills" class="w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. Python, SQL, Git">
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Job Description / Requirements *</label>
+        <textarea id="cust-desc" rows="6" class="w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula resize-none" placeholder="Paste the job responsibilities, eligibility requirements and details here..."></textarea>
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Job Link / URL</label>
+        <input type="text" id="cust-link" class="w-full px-3 py-2 bg-space border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-nebula" placeholder="e.g. https://linkedin.com/jobs/view/...">
+      </div>
+
+      <div class="flex justify-end gap-3 border-t border-white/5 pt-4">
+        <button onclick="closeCustomJobModal()" class="px-5 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs transition">
+          Cancel
+        </button>
+        <button onclick="submitCustomJob()" class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-nebula to-purple-600 hover:from-nebula/90 hover:to-purple-600/90 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-lg shadow-nebula/20">
+          <i data-lucide="wand-2" class="w-3.5 h-3.5"></i> Tailor Now
+        </button>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
