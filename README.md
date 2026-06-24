@@ -1,5 +1,5 @@
 # CareerSync - The Anti-Exhaustion Job Engine
-Tired of endless job hunting? **CareerSync** is an AI-powered hub that aggregates personalized jobs, internships, and hackathons into one feed. Just upload your baseline resume, and our AI instantly auto-tailors your CV and SOP for each specific role. Built Python, Gemini AI, FastAPI, BeautifulSoup, Tailwind CSS, web-scraping pipelines, and intelligent recommendation engines, to automate search and completely end application fatigue.
+Tired of endless job hunting? **CareerSync** is an AI-powered hub that aggregates personalized jobs, internships, and hackathons into one feed. Just upload your baseline resume, and our AI instantly auto-tailors your CV and SOP for each specific role. Built using Python, Gemini AI, FastAPI, BeautifulSoup, Tailwind CSS, web-scraping pipelines, and intelligent recommendation engines, to automate search and completely end application fatigue.
 
 
 **🚀Live Demo: Try CareerSync.ai Here!** https://careersync-ai-g27x.onrender.com
